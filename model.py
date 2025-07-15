@@ -9,6 +9,7 @@ from tensorflow.keras.layers import Dense, InputLayer, Dropout
 from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau
 from tensorflow.keras.optimizers import Adam
 import shap
+import joblib
 
 # --- 🔹 Data Loading ---
 # No need to download every time if it's cached
@@ -47,6 +48,10 @@ scaler = StandardScaler()
 X_train_scaled = scaler.fit_transform(X_train)
 X_test_scaled = scaler.transform(X_test)
 
+# Simpan scaler yang sudah di-fit agar bisa digunakan oleh API
+joblib.dump(scaler, 'x_scaler.pkl')
+print("Scaler saved to x_scaler.pkl")
+# -------------------------------------------
 
 # --- 🔹 Model Building ---
 model = Sequential([

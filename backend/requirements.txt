@@ -1,0 +1,8 @@
+#dibutuhkan backend
+
+Flask
+Flask-Cors
+numpy
+tensorflow
+scikit-learn
+joblib

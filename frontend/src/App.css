@@ -1,0 +1,97 @@
+body {
+  background-color: #282c34;
+  color: white;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.App {
+  text-align: center;
+}
+
+.App-header {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+}
+
+.prediction-form {
+  background-color: #3c4250;
+  padding: 2rem;
+  border-radius: 10px;
+  width: 100%;
+  max-width: 600px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.input-group label {
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+  text-transform: capitalize;
+  color: #c7c7c7;
+}
+
+.input-group input {
+  padding: 0.8rem;
+  border-radius: 5px;
+  border: 1px solid #555;
+  background-color: #282c34;
+  color: white;
+  font-size: 1rem;
+}
+
+button {
+  background-color: #61dafb;
+  border: none;
+  color: #282c34;
+  padding: 1rem 2rem;
+  font-size: 1.2rem;
+  font-weight: bold;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+button:hover {
+  background-color: #ffffff;
+}
+
+button:disabled {
+  background-color: #555;
+  cursor: not-allowed;
+}
+
+.result, .error {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  border-radius: 10px;
+  width: 100%;
+  max-width: 600px;
+}
+
+.result {
+  background-color: #2a5a3b;
+}
+
+.error {
+  background-color: #6e2b2b;
+}
