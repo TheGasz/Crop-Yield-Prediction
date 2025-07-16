@@ -3,7 +3,7 @@ import './App.css';
 
 function App() {
   const [formData, setFormData] = useState({
-    Temperature_C: '',
+   Soil_Quality: '',
     Rainfall_mm: '',
     Humidity_percent: '',
     Fertilizer_kg_per_hectare: '',
