@@ -42,7 +42,7 @@ def predict():
 
         # Pastikan semua fitur yang dibutuhkan ada di data JSON
         required_features = [
-            'Soil_Quality','Seed_Variety','Fertilizer_Ammount_kg_per_hectare','Rainfall_mm',
+            'Soil_Quality','Seed_Variety','Sunny_Days','Fertilizer_Ammount_kg_per_hectare','Rainfall_mm',
             'Irrigation_Schedule','Yield_kg_per_hectare'
         ]
         
@@ -54,6 +54,7 @@ def predict():
             data['Soil_Quality'],
             data['Seed_Variety'],
             data['Fertilizer_Ammount_kg_per_hectare'],
+            data['Sunny_Days'],
             data['Rainfall_mm'],
             data['Irrigation_Schedule'],
             data['Yield_kg_per_hectare']
