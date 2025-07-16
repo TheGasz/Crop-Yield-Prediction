@@ -9,7 +9,6 @@ function App() {
     Sunny_Days: "",
     Rainfall_mm: "",
     Irrigation_Schedule: "",
-    Yield_kg_per_hectare: "",
   });
 
   const [prediction, setPrediction] = useState(null);
