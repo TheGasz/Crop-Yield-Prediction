@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify
-from flask_cors import CORS 
+from flask_cors import CORS  
 import numpy as np
-from tensorflow.keras.models import load_model
+from tensorflow.keras.models import load_model 
 import joblib
 
 app = Flask(__name__)
@@ -10,10 +10,20 @@ CORS(app)
 # Load model dan scaler
 # Pastikan file-file ini ada di folder yang sama dengan main.py
 try:
-    model = load_model("yield_model.h5")
+    # Coba load format .keras dulu (recommended)
+    try:
+        model = load_model("crop_yield_model.keras")
+        print("✅ Loaded model from crop_yield_model.keras")
+    except:
+        # Fallback ke .h5 format
+        model = load_model("model.h5")
+        print("✅ Loaded model from model.h5")
+    
     scaler = joblib.load("x_scaler.pkl")
+    print("✅ Loaded scaler from x_scaler.pkl")
+    
 except Exception as e:
-    print(f"Error loading model or scaler: {e}")
+    print(f"❌ Error loading model or scaler: {e}")
     model = None
     scaler = None
 
@@ -32,8 +42,8 @@ def predict():
 
         # Pastikan semua fitur yang dibutuhkan ada di data JSON
         required_features = [
-            'Temperature_C', 'Rainfall_mm', 'Humidity_percent',
-            'Fertilizer_kg_per_hectare', 'Pesticide_kg_per_hectare', 'Soil_quality_index'
+            'Soil_Quality','Seed_Variety','Fertilizer_Ammount_kg_per_hectare','Rainfall_mm',
+            'Irrigation_Schedule','Yield_kg_per_hectare'
         ]
         
         if not all(feature in data for feature in required_features):
@@ -41,12 +51,12 @@ def predict():
 
         # Urutan fitur HARUS SAMA PERSIS dengan saat training
         features = [
-            data['Temperature_C'],
+            data['Soil_Quality'],
+            data['Seed_Variety'],
+            data['Fertilizer_Ammount_kg_per_hectare'],
             data['Rainfall_mm'],
-            data['Humidity_percent'],
-            data['Fertilizer_kg_per_hectare'],
-            data['Pesticide_kg_per_hectare'],
-            data['Soil_quality_index']
+            data['Irrigation_Schedule'],
+            data['Yield_kg_per_hectare']
         ]
 
         # Preprocessing: scaling
