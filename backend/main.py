@@ -56,7 +56,7 @@ def predict():
             data['Fertilizer_Ammount_kg_per_hectare'],
             data['Sunny_Days'],
             data['Rainfall_mm'],
-            data['Irrigation_Schedule']
+            data['Irrigation_Schedule'],
         ]
 
         # Preprocessing: scaling
