@@ -58,6 +58,108 @@ except FileNotFoundError:
 
 print(yield_dataset.head())
 print(yield_test.head())
+yield_dataset = pd.read_csv(path + '/agricultural_yield_train.csv')
+print(yield_dataset.head())
+# yield_dataset.info()       # Tipe data, jumlah data, missing
+# yield_dataset.shape        # Jumlah baris dan kolom
+# yield_dataset.isnull().sum()
+
+
+
+yield_test = pd.read_csv(path + '/agricultural_yield_test.csv')
+print(yield_test.head())
+# yield_test.info()       # Tipe data, jumlah data, missing
+# yield_test.shape        # Jumlah baris dan kolom
+# yield_test.isnull().sum()
+# --- 🔹 IDA: Initial Data Analysis ---
+print("\n📊 DATA INFO:")
+print(yield_dataset.info())
+
+print("\n🔍 Missing Values:")
+print(yield_dataset.isnull().sum())
+
+print("\n📈 Descriptive Stats:")
+print(yield_dataset.describe())
+
+# --- 🔹 Histogram Distribusi Setiap Fitur ---
+import seaborn as sns
+num_cols = yield_dataset.select_dtypes(include=[np.number]).columns
+
+yield_dataset[num_cols].hist(figsize=(15, 10), bins=30)
+plt.suptitle("Distribusi Fitur", fontsize=16)
+plt.tight_layout()
+plt.show()
+
+# --- 🔹 Heatmap Korelasi ---
+plt.figure(figsize=(10, 8))
+sns.heatmap(yield_dataset[num_cols].corr(), annot=True, cmap="coolwarm")
+plt.title("Korelasi Antar Fitur")
+plt.show()
+
+# --- 🔹 Skewness Check ---
+print("\n📐 Skewness Sebelum Transformasi:")
+print(yield_dataset[num_cols].skew())
+
+# Log Transform fitur yang terlalu skewed
+# from scipy.stats import skew
+
+# skewed_feats = yield_dataset[num_cols].apply(lambda x: skew(x.dropna())).sort_values(ascending=False)
+# high_skew = skewed_feats[skewed_feats > 1]
+# print("\n🔍 Fitur Skewed (>1):")
+# print(high_skew)
+
+# for col in high_skew.index:
+#     yield_dataset[col] = np.log1p(yield_dataset[col])
+#     print(f"✅ Log transform applied on: {col}")
+
+# # Visualisasi ulang setelah log transform
+# yield_dataset[high_skew.index].hist(figsize=(12, 8), bins=30)
+# plt.suptitle("Distribusi Setelah Log Transform", fontsize=16)
+# plt.tight_layout()
+# plt.show()
+
+
+
+
+
+
+# Feature Engineering
+yield_dataset['log_Fertilizer_Amount_kg_per_hectare'] = np.log1p(yield_dataset['Fertilizer_Amount_kg_per_hectare'])
+yield_dataset['log_Rainfall_mm'] = np.log1p(yield_dataset['Rainfall_mm'])
+yield_dataset['log_Irrigation_Schedule'] = np.log1p(yield_dataset['Irrigation_Schedule'])
+yield_test['log_Fertilizer_Amount_kg_per_hectare'] = np.log1p(yield_test['Fertilizer_Amount_kg_per_hectare'])
+yield_test['log_Rainfall_mm'] = np.log1p(yield_test['Rainfall_mm'])
+yield_test['log_Irrigation_Schedule'] = np.log1p(yield_test['Irrigation_Schedule'])
+# 🔹 Fitur 1: Efektivitas Pemupukan
+# yield_dataset['Fertilizer_per_Soil'] = yield_dataset['log_Fertilizer_Amount_kg_per_hectare'] / yield_dataset['Soil_Quality']
+# yield_test['Fertilizer_per_Soil'] = yield_test['log_Fertilizer_Amount_kg_per_hectare'] / yield_test['Soil_Quality']
+
+# 🔹 Fitur 2: Total Air (Curah Hujan + Irigasi)
+yield_dataset['Total_Water'] = yield_dataset['log_Rainfall_mm'] + yield_dataset['log_Irrigation_Schedule'] * 50
+yield_test['Total_Water'] = yield_test['log_Rainfall_mm'] + yield_test['log_Irrigation_Schedule'] * 50
+
+# 🔹 Fitur 3: Efisiensi Cahaya terhadap Hasil Panen
+yield_dataset['Light_per_Yield'] = yield_dataset['Sunny_Days'] / (yield_dataset['Yield_kg_per_hectare'] + 1)
+yield_test['Light_per_Yield'] = yield_test['Sunny_Days'] / (yield_test['Yield_kg_per_hectare'] + 1)
+
+# 🔹 Fitur 4: Interaksi Varietas Benih dan Irigasi
+yield_dataset['Seed_Irrigation_Interaction'] = yield_dataset['Seed_Variety'] * yield_dataset['log_Irrigation_Schedule']
+yield_test['Seed_Irrigation_Interaction'] = yield_test['Seed_Variety'] * yield_test['log_Irrigation_Schedule']
+
+# # 🔹 Fitur 5: Interaksi Kualitas Tanah dan Sinar Matahari
+# yield_dataset['Soil_Sun_Interaction'] = yield_dataset['Soil_Quality'] * yield_dataset['Sunny_Days']
+# yield_test['Soil_Sun_Interaction'] = yield_test['Soil_Quality'] * yield_test['Sunny_Days']
+
+
+# Buat subset kolom fitur baru + target
+cols = ['Yield_kg_per_hectare',  'Total_Water', 'Light_per_Yield',
+        'Seed_Irrigation_Interaction', ]
+
+# Heatmap
+plt.figure(figsize=(8,6))
+sns.heatmap(yield_dataset[cols].corr(), annot=True, cmap='coolwarm', fmt=".2f")
+plt.title("Korelasi Fitur Baru terhadap Target")
+plt.show()
 
 # --- 🔹 Creating X and y variables ---
 # Define features (X) and target (y)
