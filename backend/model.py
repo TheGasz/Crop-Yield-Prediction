@@ -134,26 +134,53 @@ yield_test['log_Irrigation_Schedule'] = np.log1p(yield_test['Irrigation_Schedule
 # yield_dataset['Fertilizer_per_Soil'] = yield_dataset['log_Fertilizer_Amount_kg_per_hectare'] / yield_dataset['Soil_Quality']
 # yield_test['Fertilizer_per_Soil'] = yield_test['log_Fertilizer_Amount_kg_per_hectare'] / yield_test['Soil_Quality']
 
+
+yield_dataset['Soil_Fertilizer_Effectiveness'] = (
+    yield_dataset['log_Fertilizer_Amount_kg_per_hectare'] * yield_dataset['Soil_Quality']
+)
+yield_test['Soil_Fertilizer_Effectiveness'] = (
+    yield_test['log_Fertilizer_Amount_kg_per_hectare'] * yield_test['Soil_Quality']
+)
+
+
+
+
 # 🔹 Fitur 2: Total Air (Curah Hujan + Irigasi)
 yield_dataset['Total_Water'] = yield_dataset['log_Rainfall_mm'] + yield_dataset['log_Irrigation_Schedule'] * 50
 yield_test['Total_Water'] = yield_test['log_Rainfall_mm'] + yield_test['log_Irrigation_Schedule'] * 50
 
-# 🔹 Fitur 3: Efisiensi Cahaya terhadap Hasil Panen
-yield_dataset['Light_per_Yield'] = yield_dataset['Sunny_Days'] / (yield_dataset['Yield_kg_per_hectare'] + 1)
-yield_test['Light_per_Yield'] = yield_test['Sunny_Days'] / (yield_test['Yield_kg_per_hectare'] + 1)
+# 🔹 Fitur 3: Rasio Pupuk terhadap Air
+yield_dataset['Fertilizer_per_Water'] = yield_dataset['log_Fertilizer_Amount_kg_per_hectare'] / (yield_dataset['Total_Water'] + 1)
+yield_test['Fertilizer_per_Water'] = yield_test['log_Fertilizer_Amount_kg_per_hectare'] / (yield_test['Total_Water'] + 1)
 
 # 🔹 Fitur 4: Interaksi Varietas Benih dan Irigasi
 yield_dataset['Seed_Irrigation_Interaction'] = yield_dataset['Seed_Variety'] * yield_dataset['log_Irrigation_Schedule']
 yield_test['Seed_Irrigation_Interaction'] = yield_test['Seed_Variety'] * yield_test['log_Irrigation_Schedule']
 
-# # 🔹 Fitur 5: Interaksi Kualitas Tanah dan Sinar Matahari
+# 🔹 Fitur 5: Interaksi Kualitas Tanah dan Sinar Matahari
 # yield_dataset['Soil_Sun_Interaction'] = yield_dataset['Soil_Quality'] * yield_dataset['Sunny_Days']
 # yield_test['Soil_Sun_Interaction'] = yield_test['Soil_Quality'] * yield_test['Sunny_Days']
 
+# 🔹 Fitur 6: Efisiensi Pemupukan
+# yield_dataset['Fertilizer_Efficiency'] = yield_dataset['log_Fertilizer_Amount_kg_per_hectare'] / (yield_dataset['Soil_Quality'] + 1)
+# yield_test['Fertilizer_Efficiency'] = yield_test['log_Fertilizer_Amount_kg_per_hectare'] / (yield_test['Soil_Quality'] + 1)
+
+# 🔹 Fitur 7: Weather Score (kombinasi cuaca)
+# yield_dataset['Weather_Score'] = (yield_dataset['Sunny_Days'] * 0.6) + (yield_dataset['log_Rainfall_mm'] * 0.4)
+# yield_test['Weather_Score'] = (yield_test['Sunny_Days'] * 0.6) + (yield_test['log_Rainfall_mm'] * 0.4)
+
+# 🔹 Fitur 8: Resource Utilization Score
+# yield_dataset['Resource_Score'] = (yield_dataset['log_Fertilizer_Amount_kg_per_hectare'] * yield_dataset['log_Irrigation_Schedule']) / (yield_dataset['Soil_Quality'] + 1)
+# yield_test['Resource_Score'] = (yield_test['log_Fertilizer_Amount_kg_per_hectare'] * yield_test['log_Irrigation_Schedule']) / (yield_test['Soil_Quality'] + 1)
+
+yield_dataset['Fertilizer_per_Irrigation'] = yield_dataset['log_Fertilizer_Amount_kg_per_hectare'] / (yield_dataset['Irrigation_Schedule'] + 1)
+yield_test['Fertilizer_per_Irrigation'] = yield_test['log_Fertilizer_Amount_kg_per_hectare'] / (yield_test['Irrigation_Schedule'] + 1)
+
 
 # Buat subset kolom fitur baru + target
-cols = ['Yield_kg_per_hectare',  'Total_Water', 'Light_per_Yield',
-        'Seed_Irrigation_Interaction', ]
+cols = ['Yield_kg_per_hectare', 'Total_Water', 
+        'Seed_Irrigation_Interaction', 
+        'Fertilizer_per_Irrigation', 'Soil_Fertilizer_Effectiveness',]
 
 # Heatmap
 plt.figure(figsize=(8,6))
@@ -197,6 +224,7 @@ model = Sequential([
     Dense(64, activation='relu'),
     Dropout(0.1),
     Dense(32, activation='relu'),
+    Dropout(0.1),
     Dense(1)
 ])
 
@@ -245,19 +273,19 @@ model.save('model.h5')
 print("Model saved to model.h5")
 
 # 3. Save model summary ke text file
-with open('model_summary.txt', 'w') as f:
+with open('model_summary.txt', 'w', encoding='utf-8') as f:
     model.summary(print_fn=lambda x: f.write(x + '\n'))
 print("Model summary saved to model_summary.txt")
 
 # 4. Save model architecture ke JSON
 model_json = model.to_json()
-with open('model_architecture.json', 'w') as f:
+with open('model_architecture.json', 'w', encoding='utf-8') as f:
     f.write(model_json)
 print("Model architecture saved to model_architecture.json")
 
 # 5. Save hanya weights
-model.save_weights('model_weights.h5')
-print("Model weights saved to model_weights.h5")
+model.save_weights('model.weights.h5')
+print("Model weights saved to model.weights.h5")
 
 # --- 🔹 Plot Loss ---
 plt.plot(history.history['loss'], label='Training Loss')
@@ -305,5 +333,5 @@ print("2. model.h5 - Legacy format")
 print("3. x_scaler.pkl - Feature scaler")
 print("4. model_summary.txt - Model architecture summary")
 print("5. model_architecture.json - Model structure")
-print("6. model_weights.h5 - Model weights only")
+print("6. model.weights.h5 - Model weights only")
 print("\n🚀 Ready for deployment!")
